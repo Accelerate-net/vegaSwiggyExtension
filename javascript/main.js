@@ -103,52 +103,56 @@ function hideToast(){
 
 
 function hidePunchButton(){
-    //Remove Punch Button
-    var swiggy_header = document.getElementsByClassName('orders__header'); 
-    var swiggy_header_li_content = swiggy_header[0].getElementsByClassName('row');
     
-    var buttonCollection = swiggy_header_li_content[0].getElementsByClassName("orderAcceptButtonClass");        
-    buttonCollection[0].parentNode.removeChild(buttonCollection[0]);
+    //Hide Punch Button
+    document.getElementById("orderAcceptButton").style.display = 'none';
 
     //Bring back CONFIRM ORDER button
     document.getElementById("confirm-order").style.display = 'block';
-
 }
 
 
 //Scrape data for the currently opened order
 function scrapeOrderData(){
 
+
     return function() {
 
         hidePunchButton();
         showToast('Punching...');
 
-        var orderDisplayContent = document.getElementsByClassName('order-details__content');
-        var code = orderDisplayContent[0].getElementsByClassName('order-details__number')[0].getElementsByClassName('text-orange')[0].innerText;
-        var code = code.replace("#", "");
-
+        var orderNumberContent = $('.order-details__content #orders-details-prepare .order-details__number .text-yellow');
+        var code = orderNumberContent.html();
+        code = code.replace("#", "");
         var short_code = code.substring(code.length - 4, code.length);
-     
 
-        var cartContent = document.getElementsByClassName('order-details__items');
+        var specialRemarks = $('#specialInstructionPreparingOrders').html();
+        if(specialRemarks == undefined || specialRemarks == null){
+            specialRemarks = '';
+        }
+
+        var cartListContent = $('.order-details-item-row');
         var cart = [];
 
-        for(var j = 0; j < cartContent.length; j++){
+        for(var i = 0; i < cartListContent.length; i++){
+            
+            var item_name = cartListContent[i].getElementsByClassName("order-details__item-name__text")[0].innerText;
 
-            var item_name = cartContent[j].getElementsByClassName('order-details__item-name__text')[0].innerText;
-
-            var item_varient = cartContent[j].getElementsByClassName('order-details__item-variants')[0] ? cartContent[j].getElementsByClassName('order-details__item-variants')[0].innerText : "";
-            item_varient = item_varient.replace("VARIANTS: ", "");
-
-            if(item_varient != ""){
-                item_name = item_name + ' ['+item_varient+']';
+            var variantsList = cartListContent[i].getElementsByClassName('order-details__item-variants');
+         
+            if(variantsList.length > 0){
+                var item_variant = variantsList[0].innerText;
+                item_variant = item_variant.replace("VARIANTS: ", "");
+                item_name = item_name + ' ['+item_variant+']';
             }
-
-            var item_quantity = cartContent[j].getElementsByClassName('order-details__item-quantity')[0].getElementsByClassName('ng-binding')[0].innerText;
+        
+            var itemQuantityContent = cartListContent[i].getElementsByClassName('order-details__item-quantity')[0];
+            var item_quantity = itemQuantityContent.innerText;
+            item_quantity = item_quantity.replace("X", "");
             item_quantity = parseInt(item_quantity);
 
-            var item_price = cartContent[j].getElementsByClassName('order-details__item-price')[0].innerText.substring(2);
+            var item_price = cartListContent[i].getElementsByClassName('order-details__item-price')[0].innerText.substring(2);
+        
 
             cart.push({
                 name : item_name,
@@ -156,11 +160,14 @@ function scrapeOrderData(){
                 price : item_price
             });
 
-            if(j == cartContent.length - 1){
+
+            if(i == cartListContent.length - 1){
+                console.log(cart)
                 formatOrderObject();
                 break;
             }
         }
+
 
 
         function formatOrderObject(){
@@ -186,15 +193,15 @@ function scrapeOrderData(){
                   "guestCount": 0,
                   "machineName": "Swiggy Extension",
                   "sessionName": "",
-                  "stewardName": "Automatic",
+                  "stewardName": "Swiggy Automatic",
                   "stewardCode": "",
-                  "date": "26-03-2019",
-                  "timePunch": "1647",
+                  "date": "",
+                  "timePunch": "",
                   "timeKOT": "",
                   "timeBill": "",
                   "timeSettle": "",
                   "cart": cart,
-                  "specialRemarks": "",
+                  "specialRemarks": specialRemarks,
                   "allergyInfo": "",
                   "extras": [],
                   "discount": {},
@@ -269,27 +276,31 @@ function postOrderData(orderData){
 }
 
 
-
-var activeOrdersList = '';
-
 function loadActiveOrders(){
-    var activeOrdersList = document.getElementsByClassName('order-preview');
-    console.log('am assigned!!')
 
-    for(var i = 0; i < activeOrdersList.length; i++) {
-        activeOrdersList[i].addEventListener("click", bindPunchButton());
+    $("#mCSB_3_container").find("*").off();
+
+    var pendingOrdersList = $('#mCSB_3_container .order-preview');
+
+    for(var i = 0; i < pendingOrdersList.length; i++) {
+        $(pendingOrdersList[i]).bind("click", bindOrderViewButtons());
     }
 }
 
-loadActiveOrders();
+
+function bindOrderViewButtons(){
+    
+    return function() {
+        //Temporarily remove CONFIRM ORDER button
+        document.getElementById("confirm-order").style.display = 'none';
+        document.getElementById('orderAcceptButton').style.display = 'block';
+    };
+   
+}
 
 
 
 function bindPunchButton() {
-    return function() {
-
-        //Temporarily remove CONFIRM ORDER button
-        document.getElementById("confirm-order").style.display = 'none';
 
         //Inject Punch Button
         var swiggy_header = document.getElementsByClassName('orders__header'); 
@@ -306,14 +317,15 @@ function bindPunchButton() {
         }
 
         document.getElementById('orderAcceptButton').addEventListener('click', scrapeOrderData());
-
-    };
 }
 
-/* Track Page Changes */
-function pageChangeTracker(event) {
+
+
+/* Refresh Page Changes */
+setTimeout(function(){ 
+   // bindPunchButton();
     loadActiveOrders();
-};
-document.addEventListener('DOMNodeInserted', pageChangeTracker);
+}, 5000);
 
-
+bindPunchButton();
+loadActiveOrders();
