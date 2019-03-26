@@ -148,9 +148,12 @@ function scrapeOrderData(){
             var item_quantity = cartContent[j].getElementsByClassName('order-details__item-quantity')[0].getElementsByClassName('ng-binding')[0].innerText;
             item_quantity = parseInt(item_quantity);
 
+            var item_price = cartContent[j].getElementsByClassName('order-details__item-price')[0].innerText.substring(2);
+
             cart.push({
                 name : item_name,
-                quantity : item_quantity
+                quantity : item_quantity,
+                price : item_price
             });
 
             if(j == cartContent.length - 1){
