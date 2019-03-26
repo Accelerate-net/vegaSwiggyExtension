@@ -126,7 +126,7 @@ function scrapeOrderData(){
         code = code.replace("#", "");
         var short_code = code.substring(code.length - 4, code.length);
 
-        var specialRemarks = $('#specialInstructionPreparingOrders').html();
+        var specialRemarks = $('#specialInstructionNewOrders').html();
         if(specialRemarks == undefined || specialRemarks == null){
             specialRemarks = '';
         }
