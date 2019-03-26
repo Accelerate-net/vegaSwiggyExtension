@@ -12,7 +12,8 @@
        {
          "matches": ["<all_urls>"],
          "js": ["javascript/main.js"],
-         "css" : ["css/style.css"]
+         "css" : ["css/style.css"],
+         "run_at": "document_end"
        }
     ],
     "permissions": [
