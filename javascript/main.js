@@ -273,7 +273,8 @@ function postOrderData(orderData){
 var activeOrdersList = '';
 
 function loadActiveOrders(){
-    var activeOrdersList = document.getElementsByClassName('order-preview ng-scope active');
+    var activeOrdersList = document.getElementsByClassName('order-preview');
+    console.log('am assigned!!')
 
     for(var i = 0; i < activeOrdersList.length; i++) {
         activeOrdersList[i].addEventListener("click", bindPunchButton());
@@ -308,5 +309,11 @@ function bindPunchButton() {
 
     };
 }
+
+/* Track Page Changes */
+function pageChangeTracker(event) {
+    loadActiveOrders();
+};
+document.addEventListener('DOMNodeInserted', pageChangeTracker);
 
 
