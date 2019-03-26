@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<body>
+    <style>
+      .container {
+        max-height: 600px;
+        min-height: 300px;
+        width: 250px;
+        border: 2px solid rgba(0,0,0,0.3);
+        border-radius: 2px;
+        background: white;
+
+        max-height: 600px;
+	    min-height: 300px;
+	    width: 250px;
+	    border: 5px solid #ededed;
+	    border-radius: 2px;
+	    padding: 20px;
+	    background: #ED213A;
+	    background: -webkit-linear-gradient(to top, #93291E, #ED213A);
+	    background: linear-gradient(to top, #93291E, #ED213A);
+      }
+      body {
+        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+        font-size: 100%;
+      }
+      #status {
+        /* avoid an excessively wide status text */
+        white-space: pre;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 400px;
+      }
+      .patient-list {
+        max-height: 250px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        max-width: 100%;
+      }
+
+      .setButton{
+      	    width: 100%;
+		    height: 28px;
+		    margin-top: 20px;
+		    background: rgba(0, 0, 0, 0.3);
+		    border: none;
+		    color: #FFF;
+		    font-size: 12px;
+		    text-transform: uppercase;
+		    letter-spacing: 2px;
+		    outline: none;
+		    box-shadow: none;
+		    cursor: pointer;
+      }
+
+      .titleHead{
+		    padding: 10px;
+		    margin: 0;
+		    text-align: center;
+		    color: #FFF;
+		    font-weight: 300;      	
+      }
+
+      .myInput{
+      	    width: 100%;
+		    height: 25px;
+		    background: none;
+		    border: none;
+		    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+		    color: #fff;
+		    box-shadow: none;
+		    font-size: 16px;
+		    outline: none;
+		    margin-bottom: 30px;
+      }
+
+      .myLabel{
+	    color: #FFF;
+	    font-size: 11px;
+	    text-transform: uppercase;
+	    letter-spacing: 2px;
+	    font-weight: bold;
+      }
+
+    </style>
+
+    <div class="container">
+        <div class="page-header">
+          <h3 class="titleHead">Accelerate POS - Swiggy Extension</h3>
+          <p id="status"></p>
+        </div>
+        <div class="form-group">
+        	<label class="myLabel">Server IP</label>
+            <input class="myInput" type="text" id="serverDataIP">
+            <label class="myLabel">Port</label>
+            <input class="myInput" type="number" id="serverDataPort">
+            <label class="myLabel">Username</label>
+            <input class="myInput" type="text" id="serverDataUsername">
+            <label class="myLabel">Password</label>
+            <input class="myInput" type="password" id="serverDataPassword">
+        </div>
+        <div>
+          <button class="setButton" id="setServerData">Save</button>
+        </div>
+    </div>
+
+    <script src="javascript/main.js" type="text/javascript"></script>
+</body>
+</html>
+

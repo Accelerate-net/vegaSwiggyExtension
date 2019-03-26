@@ -1,0 +1,28 @@
+{
+    "name": "Swiggy Extension for Accelerate POS",
+    "version": "1.0",
+    "description": "Extension to accept online orders and auto-punch on to the Accelerate Vega POS",
+    "author": "Abhijith C S",
+    "browser_action": {
+        "default_icon": "icons/favicon.png",
+        "default_popup": "popup.html",
+        "default_title": "Accelerate POS - Swiggy Extension"
+    },
+    "content_scripts": [
+       {
+         "matches": ["<all_urls>"],
+         "js": ["javascript/main.js"],
+         "css" : ["css/style.css"]
+       }
+    ],
+    "permissions": [
+        "declarativeContent", "activeTab", "storage","http://*/*","https://*/*", "file://*/*"
+    ],
+    "icons": {
+        "16": "icons/icon_16.png",
+        "32": "icons/icon_32.png",
+        "48": "icons/icon_48.png",
+        "128": "icons/icon_128.png"
+    },
+    "manifest_version": 2
+}
