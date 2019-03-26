@@ -119,9 +119,9 @@ function scrapeOrderData(){
     return function() {
 
         hidePunchButton();
-        showToast('Punching...');
+        showToast('Processing...');
 
-        var orderNumberContent = $('.order-details__content #orders-details-prepare .order-details__number .text-yellow');
+        var orderNumberContent = $('.order-details__content #orders-details-new .order-details__number .text-orange');
         var code = orderNumberContent.html();
         code = code.replace("#", "");
         var short_code = code.substring(code.length - 4, code.length);
