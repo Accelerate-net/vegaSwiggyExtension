@@ -1,38 +1,28 @@
 {
-    "name": "Restaurant Swiggy Chrome Extension",
+    "name": "Swiggy Extension for Accelerate POS",
     "version": "1.0",
-    "description": "Extension for getting data from Swiggy delivery orders through the Restaurant!",
-    "author": "Shafeef Omar",
-    // "background": {
-    //     "scripts": [
-    //         "javascript/test.js"
-    //     ],
-    //     "persistent": false
-    // },
-    // "options_page": "options.html",
+    "description": "Extension to accept online orders and auto-punch on to the Accelerate Vega POS",
+    "author": "Abhijith C S",
+    "browser_action": {
+        "default_icon": "icons/favicon.png",
+        "default_popup": "popup.html",
+        "default_title": "Accelerate POS - Swiggy Extension"
+    },
     "content_scripts": [
        {
          "matches": ["<all_urls>"],
-         "js": ["javascript/cs.js"]
+         "js": ["javascript/main.js"],
+         "css" : ["css/style.css"]
        }
-     ],
-    // "page_action": {
-    //     "default_popup": "popup.html",
-    //     "default_icon": {
-    //     "16": "images/get_started16.png",
-    //     "32": "images/get_started32.png",
-    //     "48": "images/get_started48.png",
-    //     "128": "images/get_started128.png"
-    //   }
-    // },
+    ],
     "permissions": [
         "declarativeContent", "activeTab", "storage","http://*/*","https://*/*", "file://*/*"
     ],
     "icons": {
-        "16": "images/get_started16.png",
-        "32": "images/get_started32.png",
-        "48": "images/get_started48.png",
-        "128": "images/get_started128.png"
+        "16": "icons/icon_16.png",
+        "32": "icons/icon_32.png",
+        "48": "icons/icon_48.png",
+        "128": "icons/icon_128.png"
     },
     "manifest_version": 2
 }
