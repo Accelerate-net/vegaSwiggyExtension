@@ -152,17 +152,55 @@ function scrapeOrderData(){
                 name : item_name,
                 quantity : item_quantity
             });
+
+            if(j == cartContent.length - 1){
+                formatOrderObject();
+                break;
+            }
         }
 
-        var orderData = {
-            "_id": 'SWIGGY_'+code,
-            "orderShortCode": short_code,
-            "swiggyCode": code,
-            "cart": cart
-        };
 
-        
-        postOrderData(orderData);
+        function formatOrderObject(){
+
+            var tapOrderMetaData = {
+                "source": "SWIGGY",
+                "type": "PARCEL"
+            }
+
+            var orderData = {
+                  "_id": 'SWIGGY_'+code,
+                  "tapsSource": tapOrderMetaData,
+                  "KOTNumber": "",
+                  "orderDetails": {
+                    "mode": "",
+                    "modeType": "",
+                    "reference": code,
+                    "isOnline": true
+                  },
+                  "table": short_code,
+                  "customerName": "",
+                  "customerMobile": "",
+                  "guestCount": 0,
+                  "machineName": "Swiggy Extension",
+                  "sessionName": "",
+                  "stewardName": "Automatic",
+                  "stewardCode": "",
+                  "date": "26-03-2019",
+                  "timePunch": "1647",
+                  "timeKOT": "",
+                  "timeBill": "",
+                  "timeSettle": "",
+                  "cart": cart,
+                  "specialRemarks": "",
+                  "allergyInfo": "",
+                  "extras": [],
+                  "discount": {},
+                  "customExtras": {}
+            }
+
+            postOrderData(orderData);
+        }
+
     };
 
 }
