@@ -191,7 +191,6 @@ function scrapeOrderData(){
         }
 
 
-
         function formatOrderObject(){
 
             var tapOrderMetaData = {
@@ -250,6 +249,7 @@ function postOrderData(orderData, total_items){
             return "";
         }
         
+
         let COMMON_LOCAL_SERVER_IP = '';
 
         chrome.storage.local.get(['newServerData'], function(result) {
