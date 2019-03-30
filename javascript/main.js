@@ -108,23 +108,44 @@ function hidePunchButton(){
     document.getElementById("orderAcceptButton").style.display = 'none';
 
     //Bring back CONFIRM ORDER button
-    document.getElementById("confirm-order").style.display = 'block';
+    //document.getElementById("confirm-order").style.display = 'block';
 }
 
 
 //Scrape data for the currently opened order
 function scrapeOrderData(){
 
-
     return function() {
 
         hidePunchButton();
         showToast('Processing...');
 
+        // Preparing Order (for Testing)
+        //var orderNumberContent = $('.order-details__content #orders-details-prepare .order-details__number .text-yellow');
+        
         var orderNumberContent = $('.order-details__content #orders-details-new .order-details__number .text-orange');
+        
+        var totalItemContent = $('.order-details__content #orders-details-new .order-details__total'); 
+        
+
+        if(orderNumberContent.length < 1 || totalItemContent.length < 1){
+            updateToastAndClose('Warning! Order Content not found, Refresh and try again.', '#ff9800');
+            
+            setTimeout(function(){
+                location.reload();
+            }, 5000);
+
+            return "";
+        }
+
+        /* Order ID */
         var code = orderNumberContent.html();
         code = code.replace("#", "");
         var short_code = code.substring(code.length - 4, code.length);
+
+        /* Total Items */
+        var total_items_check = totalItemContent.text().substring(0)
+        total_items_check = parseInt(totalItemContent);
 
         var specialRemarks = $('#specialInstructionNewOrders').html();
         if(specialRemarks == undefined || specialRemarks == null){
@@ -152,7 +173,9 @@ function scrapeOrderData(){
             item_quantity = parseInt(item_quantity);
 
             var item_price = cartListContent[i].getElementsByClassName('order-details__item-price')[0].innerText.substring(2);
-        
+            item_price = parseInt(item_price);
+            item_price = item_price / item_quantity;     
+
 
             cart.push({
                 name : item_name,
@@ -162,7 +185,6 @@ function scrapeOrderData(){
 
 
             if(i == cartListContent.length - 1){
-                console.log(cart)
                 formatOrderObject();
                 break;
             }
@@ -188,8 +210,8 @@ function scrapeOrderData(){
                     "isOnline": true
                   },
                   "table": short_code,
-                  "customerName": "",
-                  "customerMobile": "",
+                  "customerName": "Swiggy Automatic",
+                  "customerMobile": short_code,
                   "guestCount": 0,
                   "machineName": "Swiggy Extension",
                   "sessionName": "",
@@ -208,7 +230,7 @@ function scrapeOrderData(){
                   "customExtras": {}
             }
 
-            postOrderData(orderData);
+            postOrderData(orderData, total_items_check);
         }
 
     };
@@ -216,7 +238,17 @@ function scrapeOrderData(){
 }
 
 
-function postOrderData(orderData){
+function postOrderData(orderData, total_items){
+
+        if(orderData.cart.length != total_items){
+            updateToastAndClose('Error: Punching failed, Refresh and try again.', '#f44336');
+            
+            setTimeout(function(){
+                location.reload();
+            }, 3000);
+
+            return "";
+        }
         
         let COMMON_LOCAL_SERVER_IP = '';
 
@@ -253,9 +285,14 @@ function postOrderData(orderData){
             http.setRequestHeader("Content-Type", "application/json");
 
             http.onreadystatechange = function() {
-
                 if(http.status == 201) {
                     updateToastAndClose('Order has been posted Successfully!', '#08cc8c');
+                
+                    $('#confirm-order').click();
+                    setTimeout(function(){
+                        location.reload();
+                    }, 3000);
+
                 }
                 else if(http.status == 409){
                     updateToastAndClose('Warning! Order is already punched', '#f44336');
@@ -266,8 +303,6 @@ function postOrderData(orderData){
                 else{
                     updateToastAndClose('Error: Punching order failed', '#f44336');
                 }
-
-                loadActiveOrders();
             }
 
             http.send(JSON.stringify(orderData));  
@@ -277,7 +312,6 @@ function postOrderData(orderData){
 
 
 function loadActiveOrders(){
-
     $("#mCSB_3_container").find("*").off();
 
     var pendingOrdersList = $('#mCSB_3_container .order-preview');
@@ -287,18 +321,18 @@ function loadActiveOrders(){
     }
 }
 
+//loadActiveOrders();
+
 
 function bindOrderViewButtons(){
     
     return function() {
         //Temporarily remove CONFIRM ORDER button
-        document.getElementById("confirm-order").style.display = 'none';
+        //document.getElementById("confirm-order").style.display = 'none';
         document.getElementById('orderAcceptButton').style.display = 'block';
     };
    
 }
-
-
 
 function bindPunchButton() {
 
@@ -319,13 +353,4 @@ function bindPunchButton() {
         document.getElementById('orderAcceptButton').addEventListener('click', scrapeOrderData());
 }
 
-
-
-/* Refresh Page Changes */
-setTimeout(function(){ 
-   // bindPunchButton();
-    loadActiveOrders();
-}, 5000);
-
 bindPunchButton();
-loadActiveOrders();
