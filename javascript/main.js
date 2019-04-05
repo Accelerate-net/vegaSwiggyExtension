@@ -128,7 +128,7 @@ function scrapeOrderData(){
         var totalItemContent = $('.order-details__content #orders-details-new .order-details__total'); 
 
         if(orderNumberContent.length < 1 || totalItemContent.length < 1){
-            updateToastAndClose('Warning! Order Content not found, Refresh and try again.', '#ff9800');
+            updateToastAndClose('Warning! Valid Order Content not found, Refresh and try again.', '#ff9800');
             
             setTimeout(function(){
                 location.reload();
@@ -240,9 +240,6 @@ function scrapeOrderData(){
 
 function postOrderData(orderData, total_items){
 
-        console.log(orderData.cart.length, total_items)
-
-
         if(orderData.cart.length != total_items){
             updateToastAndClose('Error: Punching failed, Refresh and try again.', '#f44336');
             
@@ -292,14 +289,14 @@ function postOrderData(orderData, total_items){
                 if(http.status == 201) {
                     updateToastAndClose('Order has been posted Successfully!', '#08cc8c');
                 
-                    //$('#confirm-order').click();
+                    $('#confirm-order').click();
                     setTimeout(function(){
                         location.reload();
                     }, 3000);
 
                 }
                 else if(http.status == 409){
-                    updateToastAndClose('Warning! Order is already punched', '#f44336');
+                    updateToastAndClose('Aborted! This Order was punched already', '#3498db');
                 }
                 else if(http.status == 404){
                     updateToastAndClose('System Error: Server connection failed', '#f44336');
@@ -313,19 +310,6 @@ function postOrderData(orderData, total_items){
 
         });
 }
-
-
-function loadActiveOrders(){
-    $("#mCSB_3_container").find("*").off();
-
-    var pendingOrdersList = $('#mCSB_3_container .order-preview');
-
-    for(var i = 0; i < pendingOrdersList.length; i++) {
-        $(pendingOrdersList[i]).bind("click", bindOrderViewButtons());
-    }
-}
-
-//loadActiveOrders();
 
 
 function bindOrderViewButtons(){
