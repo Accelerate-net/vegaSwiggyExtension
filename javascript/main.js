@@ -126,10 +126,9 @@ function scrapeOrderData(){
         var orderNumberContent = $('.order-details__content #orders-details-new .order-details__number .text-orange');
         
         var totalItemContent = $('.order-details__content #orders-details-new .order-details__total'); 
-        
 
         if(orderNumberContent.length < 1 || totalItemContent.length < 1){
-            updateToastAndClose('Warning! Order Content not found, Refresh and try again.', '#ff9800');
+            updateToastAndClose('Warning! Valid Order Content not found, Refresh and try again.', '#ff9800');
             
             setTimeout(function(){
                 location.reload();
@@ -144,8 +143,10 @@ function scrapeOrderData(){
         var short_code = code.substring(code.length - 4, code.length);
 
         /* Total Items */
-        var total_items_check = totalItemContent.text().substring(0)
-        total_items_check = parseInt(totalItemContent);
+        var total_items_check = totalItemContent.text();
+        total_items_check = total_items_check.trim();
+        total_items_check = total_items_check.split(" ");
+        total_items_check = parseInt(total_items_check[0]);
 
         var specialRemarks = $('#specialInstructionNewOrders').html();
         if(specialRemarks == undefined || specialRemarks == null){
@@ -209,12 +210,12 @@ function scrapeOrderData(){
                     "isOnline": true
                   },
                   "table": short_code,
-                  "customerName": "Swiggy Automatic",
-                  "customerMobile": short_code,
+                  "customerName": "Swiggy #"+short_code,
+                  "customerMobile": "",
                   "guestCount": 0,
                   "machineName": "Swiggy Extension",
                   "sessionName": "",
-                  "stewardName": "Swiggy Automatic",
+                  "stewardName": "",
                   "stewardCode": "",
                   "date": "",
                   "timePunch": "",
@@ -280,7 +281,7 @@ function postOrderData(orderData, total_items){
 
             //post to server
             var http = new XMLHttpRequest();   
-            var url = COMMON_LOCAL_SERVER_IP+'/accelerate_taps_orders';
+            var url = COMMON_LOCAL_SERVER_IP+'/accelerate_third_party_orders';
             http.open("POST", url);
             http.setRequestHeader("Content-Type", "application/json");
 
@@ -295,7 +296,7 @@ function postOrderData(orderData, total_items){
 
                 }
                 else if(http.status == 409){
-                    updateToastAndClose('Warning! Order is already punched', '#f44336');
+                    updateToastAndClose('Aborted! This Order was punched already', '#3498db');
                 }
                 else if(http.status == 404){
                     updateToastAndClose('System Error: Server connection failed', '#f44336');
@@ -309,19 +310,6 @@ function postOrderData(orderData, total_items){
 
         });
 }
-
-
-function loadActiveOrders(){
-    $("#mCSB_3_container").find("*").off();
-
-    var pendingOrdersList = $('#mCSB_3_container .order-preview');
-
-    for(var i = 0; i < pendingOrdersList.length; i++) {
-        $(pendingOrdersList[i]).bind("click", bindOrderViewButtons());
-    }
-}
-
-//loadActiveOrders();
 
 
 function bindOrderViewButtons(){
