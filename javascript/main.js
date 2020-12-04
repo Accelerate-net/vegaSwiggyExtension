@@ -173,7 +173,7 @@ function scrapeOrderData(){
             item_quantity = item_quantity.replace("X", "");
             item_quantity = parseInt(item_quantity);
 
-            var item_price = cartListContent[i].getElementsByClassName('order-details__item-price')[0].innerText.substring(2);
+            var item_price = cartListContent[i].getElementsByClassName('order-details__item-price')[0].innerText.substring(1);
             item_price = parseInt(item_price);
             item_price = item_price / item_quantity;     
 
