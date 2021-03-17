@@ -305,6 +305,9 @@ function postOrderData(orderData, total_items){
                 }
                 else if(http.status == 409){
                     updateToastAndClose('Aborted! This Order was punched already', '#3498db');
+                    setTimeout(function(){
+                        location.reload();
+                    }, 2000);
                 }
                 else if(http.status == 404){
                     updateToastAndClose('System Error: Server connection failed', '#f44336');
@@ -397,5 +400,5 @@ setInterval(function(){
     if(globalTimer == COUNTER_BASE_TIME + COUNT_EVERY_SECONDS){
         globalTimer = 0;
     }
-    
+
 }, 1000);
