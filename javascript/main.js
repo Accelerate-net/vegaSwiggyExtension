@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var default_port = '5984';
         var default_username = 'admin';
         var default_password = 'admin';
+        var default_autoEnabled = 'false';
 
 
         chrome.storage.local.get(['newServerData'], function(result) {
@@ -19,12 +20,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById("serverDataPort").value = saved_url.portNumber;
                 document.getElementById("serverDataUsername").value = saved_url.username;
                 document.getElementById("serverDataPassword").value = saved_url.password;
+                document.getElementById("autoEnabled").value = saved_url.autoEnabled;
             }
             else{
                 document.getElementById("serverDataIP").value = default_ip;
                 document.getElementById("serverDataPort").value = default_port;
                 document.getElementById("serverDataUsername").value = default_username;
                 document.getElementById("serverDataPassword").value = default_password;
+                document.getElementById("autoEnabled").value = default_autoEnabled;
             }
         });
 
@@ -35,16 +38,19 @@ document.addEventListener('DOMContentLoaded', function() {
             var server_port = document.getElementById("serverDataPort").value;
             var server_username = document.getElementById("serverDataUsername").value;
             var server_password = document.getElementById("serverDataPassword").value;
+            var autoEnabled = document.getElementById("autoEnabled").value;
 
             var newServerData = {
                 "ip": server_ip,
                 "portNumber": server_port,
                 "username": server_username,
-                "password": server_password
+                "password": server_password,
+                "autoEnabled": autoEnabled
             }
 
             chrome.storage.local.set({'newServerData': encodeURI(JSON.stringify(newServerData))}, function() {
-              window.close();
+                window.close();
+                window.open('http://partner.swiggy.com/orders');
             });
         });
 });
@@ -63,7 +69,6 @@ function initialiseStyleContent(){
 }
 
 initialiseStyleContent();
-
 
 
 /* Loading Animation */
@@ -128,11 +133,12 @@ function scrapeOrderData(){
         var totalItemContent = $('.order-details__content #orders-details-new .order-details__total'); 
 
         if(orderNumberContent.length < 1 || totalItemContent.length < 1){
+
             updateToastAndClose('Warning! Valid Order Content not found, Refresh and try again.', '#ff9800');
             
             setTimeout(function(){
                 location.reload();
-            }, 5000);
+            }, 2000);
 
             return "";
         }
@@ -294,7 +300,7 @@ function postOrderData(orderData, total_items){
                     $('#confirm-order').click();
                     setTimeout(function(){
                         location.reload();
-                    }, 3000);
+                    }, 2000);
 
                 }
                 else if(http.status == 409){
@@ -324,6 +330,7 @@ function bindOrderViewButtons(){
    
 }
 
+
 function bindPunchButton() {
 
         //Inject Punch Button
@@ -337,6 +344,19 @@ function bindPunchButton() {
             accept_button_template.classList.add("orderAcceptButtonClass");
             accept_button_template.innerHTML = "Punch Order";
 
+            //Change button color if auto punch enabled
+            chrome.storage.local.get(['newServerData'], function(result) {
+                if(result.newServerData){
+                    var userSettings = JSON.parse(decodeURI(result.newServerData));
+                    if(userSettings.autoEnabled && userSettings.autoEnabled == "true"){
+                        accept_button_template.classList.add("orderAcceptButtonClassAuto");
+                        accept_button_template.classList.remove("orderAcceptButtonClass");
+                        accept_button_template.innerHTML = "Auto Punching";
+                    }
+                }
+            });            
+            
+
             swiggy_header_li_content[0].appendChild(accept_button_template);
         }
 
@@ -344,3 +364,38 @@ function bindPunchButton() {
 }
 
 bindPunchButton();
+
+
+//Automate
+var globalTimer = 0;
+let COUNTER_BASE_TIME = 2;
+let COUNT_EVERY_SECONDS = 5;
+setInterval(function(){
+    globalTimer++;
+
+    if(globalTimer > COUNTER_BASE_TIME){
+        let timeleft = globalTimer - COUNTER_BASE_TIME;
+        timeleft = COUNT_EVERY_SECONDS - timeleft + 1;
+        chrome.storage.local.get(['newServerData'], function(result) {
+            if(result.newServerData){
+                var userSettings = JSON.parse(decodeURI(result.newServerData));
+                if(userSettings.autoEnabled && userSettings.autoEnabled == "true"){
+                    var buttonCollection = document.getElementsByClassName("orderAcceptButtonClassAuto")[0];
+                    if(timeleft > 1){
+                        buttonCollection.innerHTML = "Punching Order in " + (timeleft - 1) + " sec";
+                    }
+                    else{
+                        buttonCollection.innerHTML = "Auto Punching";
+                        buttonCollection.click();
+                    }
+
+                }
+            }
+        });       
+    }
+
+    if(globalTimer == COUNTER_BASE_TIME + COUNT_EVERY_SECONDS){
+        globalTimer = 0;
+    }
+    
+}, 1000);
